@@ -4,8 +4,14 @@ require "net/http"
 
 module Color
     class SDK
-        def initialize ( queue )
-            @queue = queue
+        def initialize ( key, secret )
+            parts = key.split( "/" )
+            region = parts.shift()
+            url = parts.join( "/" )
+
+            @queue = "https://sqs." + region + ".amazonaws.com/" + url
+            @key = key
+            @secret = secret
             @buffer = "";
         end
 
@@ -28,7 +34,15 @@ module Color
             http.verify_mode = OpenSSL::SSL::VERIFY_NONE
 
             req = Net::HTTP::Post.new( uri.path )
-            req.body = "Action=SendMessage&MessageBody=" + buffer
+            req.body = "Action=SendMessage" +
+                "&MessageAttribute.1.Name=key" +
+                "&MessageAttribute.1.Value.StringValue=" + @key +
+                "&MessageAttribute.1.DataType=String" +
+                "&MessageAttribute.2.Name=secret" +
+                "&MessageAttribute.2.Value.StringValue=" + @secret +
+                "&MessageAttribute.2.DataType=String" +
+                "&MessageBody=" + buffer
+            
             Thread.new do 
                 http.request( req )
             end
