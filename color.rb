@@ -36,15 +36,15 @@ module Color
             req = Net::HTTP::Post.new( uri.path )
             req.body = "Action=SendMessage" +
                 "&MessageAttribute.1.Name=key" +
-                "&MessageAttribute.1.Value.StringValue=" + @key +
-                "&MessageAttribute.1.DataType=String" +
+                "&MessageAttribute.1.Value.DataType=String" + 
+                "&MessageAttribute.1.Value.StringValue=" + @key + 
                 "&MessageAttribute.2.Name=secret" +
+                "&MessageAttribute.2.Value.DataType=String" +
                 "&MessageAttribute.2.Value.StringValue=" + @secret +
-                "&MessageAttribute.2.DataType=String" +
-                "&MessageBody=" + buffer
+                "&MessageBody=" + buffer.encode( "utf-8" )
             
             Thread.new do 
-                http.request( req )
+                res = http.request( req )
             end
 
             return self
