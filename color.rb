@@ -16,7 +16,7 @@ module Color
         end
 
         def write ( entry )
-            @buffer += entry.to_json + "\n"
+            @buffer << entry.to_json << "\n".freeze
             if @buffer.size >= 60000
                 flush() # auto-flush
             end
